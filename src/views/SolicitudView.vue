@@ -2,56 +2,62 @@
   <div>
     <v-layout :wrap="true">
       <v-flex xs12>
-        <v-card dense
-          elevation="2"
-          class="pa-2"
-          style="margin-top: 3em"
-          outlined
-          tile
-        >
+        <v-card dense elevation="2" class="pa-2" style="margin-top: 3em" outlined tile>
           <template>
             <v-snackbar v-model="snackbar" :timeout="timeout">
               {{ message }}
 
               <template v-slot:action="{ attrs }">
-                <v-btn
-                  color="blue"
-                  text
-                  v-bind="attrs"
-                  @click="snackbar = false"
-                >
+                <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
                   Close
                 </v-btn>
               </template>
             </v-snackbar>
 
-            <v-form
-              @submit="submit"
-              method="post"
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+            <v-form @submit="submit" method="post" ref="form" v-model="valid" lazy-validation>
               <v-container class="lighten-5 mb-6">
-                <v-row>
-                  <v-col cols="12" sm="6" md="3"></v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <h4>Testing</h4>
+
+                <v-row dense>
+                  <v-col class="d-flex" cols="12" sm="3">
+                    <v-select :items="items" label="Cuidad origen" outlined></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6" md="3"> </v-col>
+                  <v-col class="d-flex" cols="12" sm="3">
+                    <v-select :items="items" label="Cuidad destino" outlined></v-select>
+                  </v-col>
+
+                  <v-col class="d-flex" cols="12" sm="3">
+                    <v-menu ref="menu" v-model="menuFechaSalida" :close-on-content-click="false"
+                      transition="scale-transition" offset-y min-width="auto">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="fechaSalida" label="Fecha salida" prepend-icon="mdi-calendar" readonly
+                          v-bind="attrs" v-on="on"></v-text-field>
+                      </template>
+                      <v-date-picker v-model="fechaSalida" :active-picker.sync="activePickerFechaSalida"
+                        min="1983-05-29" max="2025-05-29" @change="save"></v-date-picker>
+                    </v-menu>
+                  </v-col>
+
+                  <v-col class="d-flex" cols="12" sm="3">
+                    <v-menu ref="menu" v-model="menuFechaRetorno" :close-on-content-click="false"
+                      transition="scale-transition" offset-y min-width="auto">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="fechaRetorno" label="Fecha retorno" prepend-icon="mdi-calendar" readonly
+                          v-bind="attrs" v-on="on"></v-text-field>
+                      </template>
+                      <v-date-picker v-model="fechaRetorno" :active-picker.sync="activePickerFechaRetorno"
+                        min="1983-05-29" max="2025-05-29" @change="save"></v-date-picker>
+                    </v-menu>
+                  </v-col>
                 </v-row>
+
+
+
+
 
                 <v-row>
                   <v-col outlined cols="12" sm="6" md="4"> </v-col>
                   <v-col outlined cols="12" sm="6" md="4">
-                    <v-btn
-                      type="submit"
-                      :disabled="!valid"
-                      color="success"
-                      class="mr-4"
-                      @click="submit"
-                      width="100%"
-                    >
+                    <v-btn type="submit" :disabled="!valid" color="success" class="mr-4" @click="submit" width="100%">
                       Submit
                     </v-btn>
                   </v-col>
@@ -74,8 +80,6 @@ import { createToastInterface } from "vue-toastification";
 //const { API_HOST } = config;
 import { mapState } from "vuex";
 
-const API_HOST = process.env.VUE_APP_BACKEND_SERVER_URL;
-console.log(API_HOST);
 //VUE_APP_BACKEND_SERVER_URL
 /**
  * 
@@ -85,13 +89,24 @@ console.log(API_HOST);
  * 
  */
 export default {
-  name: "SolicitudView",
-
+  name: "BuscadorView",
   computed: {
-   ...mapState(["counter"]),
+    ...mapState(["counter"]),
   },
 
   data: () => ({
+
+    fechaSalida: null,
+    activePickerFechaSalida: null,
+    activePickerFechaRetorno: null,
+    fechaRetorno: null,
+    menuFechaSalida: false,
+    menuFechaRetorno: false,
+
+
+
+
+
     snackbar: false,
     message: "Exito",
     timeout: 2000,
@@ -185,104 +200,10 @@ export default {
       this.sendData(formData);
     },
 
-    async sendData(data) {
-      try {
-        const resp = await fetch(
-          `${API_HOST}/api/send/mail/sendmailSolicitud`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          }
-        );
-        // console.log(err)
-        const result = await resp.json();
-        if (!result.error) {
-          this.getToastSuccess("Se ha enviado la información");
 
-          //     this.message = result.message;
-          //    this.color = "success";
-          //   this.snackbar = true;
-        } else {
-          throw new Error("Error en servidor");
-        }
-      } catch (err) {
-        console.log("errr", err);
-        this.message = "Error en servidor";
-        this.color = "error";
-        this.snackbar = true;
-      }
-    },
     // consume api php catalogo.
 
-    async getBancos() {
-      try {
-        const resp = await fetch(`${API_HOST}/api/bancos`, {
-          method: "GET",
-        });
-        return await resp.json();
-      } catch (err) {
-        console.log(err);
-      }
-    },
 
-    async getTiposPersonas() {
-      try {
-        const resp = await fetch(`${API_HOST}/api/persona/tiposPersonas`, {
-          method: "GET",
-        });
-        return await resp.json();
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    async getPaises() {
-      try {
-        const resp = await fetch(`${API_HOST}/api/persona/paises`, {
-          method: "GET",
-        });
-        return await resp.json();
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    async getTipoProducto() {
-      try {
-        const resp = await fetch(`${API_HOST}/api/producto/tiposProductos`, {
-          method: "GET",
-        });
-        return await resp.json();
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    async getTiposSolicitudes() {
-      try {
-        const resp = await fetch(
-          `${API_HOST}/api/solicitud/reclamos/tiposSolicitudes`,
-          {
-            method: "GET",
-          }
-        );
-        return await resp.json();
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    //
-    async getTiposMotivos() {
-      try {
-        const resp = await fetch(`${API_HOST}/api/solicitud/reclamos/motivos`, {
-          method: "GET",
-        });
-        return await resp.json();
-      } catch (err) {
-        console.log(err);
-      }
-    },
     validate() {
       this.$refs.form.validate();
     },

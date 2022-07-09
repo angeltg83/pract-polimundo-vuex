@@ -14,7 +14,7 @@
     </v-main>
 
     <v-footer app>
-      <strong style="font-size: 11px">Modulo reclamos</strong>
+      <strong style="font-size: 11px">Prueba frontEnd Polimundo</strong>
     </v-footer>
   </v-app>
 </template>
