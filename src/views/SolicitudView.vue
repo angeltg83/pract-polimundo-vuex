@@ -8,10 +8,12 @@
           <h3>Tickets</h3>
           <v-row dense>
             <v-col class="d-flex" cols="12" sm="3">
-              <v-select :items="getCiudades" item-text="name" item-value="id" label="Cuidad origen" outlined></v-select>
+              <v-select :items="getCiudades" v-model="ciudad_origen" item-text="name" item-value="id"
+                label="Cuidad origen" outlined></v-select>
             </v-col>
             <v-col class="d-flex" cols="12" sm="3">
-              <v-select :items="getCiudades" item-text="name" item-value="id" label="Cuidad destino" outlined>
+              <v-select :items="getCiudades" v-model="ciudad_destino" item-text="name" item-value="id"
+                label="Cuidad destino" outlined>
               </v-select>
             </v-col>
 
@@ -64,17 +66,10 @@
 </template>
 
 <script>
-import { createToastInterface } from "vue-toastification";
-
-import { mapState } from "vuex";
 import moment from 'moment'
-/**
- * 
- * iNVOCAR AL COMMIT, desde el commit
- * this.$store.commit("ADD_PERSON");
- * this.$store.commit([nombreMutación])
- * 
- */
+import { createToastInterface } from "vue-toastification";
+import { mapState } from "vuex";
+
 export default {
   name: "BuscadorView",
   computed: {
@@ -93,14 +88,14 @@ export default {
     menuFechaSalida: false,
     menuFechaRetorno: false,
 
-
     items: [],
-
-
+    ciudad_origen: null,
+    ciudad_destino: null,
   }),
 
 
   methods: {
+
 
     saveFechaSalida(date) {
       // this.$refs.menuFechaSalida.saveFechaSalida(date)
@@ -115,30 +110,9 @@ export default {
 
     submit: function (e) {
       e.preventDefault();
-      const formData = {
-        email: this.email,
-        telefono: this.telefono,
-        identificacion: this.identificacion,
-        tipo_persona_id: this.tipoPersona,
-        nombres: this.nombres,
-        apellido_paterno: this.apellidoPaterno,
-        apellido_materno: this.apellidoMaterno,
-        razon_social: this.razonSocial,
-        representante_legal: this.representanteLegal,
-        tipo_motivo_id: this.motivo,
-        tipo_productos_id: this.tipoServicio,
-        entidad_bancaria_id: this.entidadBancaria,
-        pais_id: this.pais,
-        observacion: this.observacion,
-        tipo_solicitud_id: this.tipoSolicitud,
-        ciudad: this.ciudad,
-      };
-
-      this.sendData(formData);
+      this.$store.commit("SET_CIUDAD_ORIGEN", this.ciudad_origen);
+      this.$store.commit("SET_CIUDAD_DESTINO", this.ciudad_destino);
     },
-
-
-    // consume api php catalogo.
 
 
     validate() {
@@ -155,6 +129,11 @@ export default {
         timeout: 2000,
       }).success(msg);
     },
+      getToastWarning(msg) {
+      createToastInterface({
+        timeout: 2000,
+      }).warning(msg);
+    },
   },
   watch: {
     fechaSalida(newValue, oldValue) {
@@ -163,6 +142,11 @@ export default {
       }
     },
     fechaRetorno(newValue, oldValue) {
+      if (!moment(this.fechaSalida).isSameOrBefore(newValue)) {
+        this.getToastWarning('Fecha salida debe ser menor')
+        return
+      }
+
       if (newValue != oldValue && moment(this.fechaSalida).isSameOrBefore(newValue)) {
         this.$store.commit("SET_FECHA_RETORNO", newValue);
       }
@@ -170,6 +154,7 @@ export default {
   },
 
   async mounted() {
+
   },
 };
 </script>

@@ -6,6 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     filtros: {
+      ciudad_origen: null,
+      ciudad_destino: null,
       fecha_salida: null,
       fecha_retorno: null,
       ciudades: [
@@ -106,6 +108,12 @@ export default new Vuex.Store({
     },
     SET_FECHA_RETORNO: function (state, data) {
       state.filtros.fecha_retorno = data;
+    },
+    SET_CIUDAD_ORIGEN: function (state, data) {
+      state.filtros.ciudad_origen = data;
+    },
+    SET_CIUDAD_DESTINO: function (state, data) {
+      state.filtros.ciudad_destino = data;
     },
   },
   getters: {
