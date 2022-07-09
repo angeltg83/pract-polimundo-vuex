@@ -1,33 +1,33 @@
 <template>
   <v-app>
-    
-    <v-app-bar absolute color="primary" dense dark elevation="4">
+
+    <v-app-bar app dense dark elevation="1" outlined>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        Publimundo
       </v-toolbar-title>
     </v-app-bar>
 
     <v-main>
       <v-container fluid>
-       <SolicitudView/>
+        <router-view />
       </v-container>
     </v-main>
 
     <v-footer app>
-      <strong style="font-size: 11px">Prueba frontEnd Polimundo</strong>
+      <strong style="font-size: 11px">Prueba de frontEnd Polimundo - Desarrollado por: Angel Tigua Z - Año : {{ hoy }}
+      </strong>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-import SolicitudView from './views/SolicitudView'
+import moment from 'moment'
 export default {
-  name: "App",
-  components:{
-    SolicitudView
-  },
+  
   data() {
     return {
+      hoy: moment().format('YYYY'),
       drawer: null,
     };
   },

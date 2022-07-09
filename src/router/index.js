@@ -1,21 +1,24 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-Vue.use(VueRouter)
+import Vue from "vue";
+import VueRouter from "vue-router";
+Vue.use(VueRouter);
 const routes = [
-
-  // {
-  //   path: '/',
-  //   name: 'home',
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/HomeView.vue')
-  // },
- ]
+  {
+    path: "/",
+    component: () => import("../views/FormTicketView"),
+  },
+  {
+    path: "/listado",
+    name: "listado",
+    component: () => import("../components/ListadoTickets"),
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
   routes,
   linkActiveClass: "active",
-  linkExactActiveClass: "exact-active"
-})
+  linkExactActiveClass: "exact-active",
+});
 
-export default router
+export default router;

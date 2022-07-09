@@ -1,5 +1,5 @@
 <template>
-  <v-card dense elevation="1" class="pa-2" style="margin-top: 3em" outlined tile>
+  <v-card >
     <template>
 
 
@@ -43,9 +43,6 @@
           </v-row>
 
 
-
-
-
           <v-row>
             <v-col outlined cols="12" sm="6" md="4"> </v-col>
             <v-col outlined cols="12" sm="6" md="4">
@@ -71,7 +68,7 @@ import { createToastInterface } from "vue-toastification";
 import { mapState } from "vuex";
 
 export default {
-  name: "BuscadorView",
+  name: "FormTicketView",
   computed: {
     ...mapState(["filtros"]),
     getCiudades() {
@@ -95,35 +92,26 @@ export default {
 
 
   methods: {
-
-
     saveFechaSalida(date) {
-      // this.$refs.menuFechaSalida.saveFechaSalida(date)
       console.log(date)
     },
-
     saveFechaRetorno(date) {
-      //this.$refs.menuFechaSalida.saveFechaRetorno(date)
       console.log(date)
     },
-
-
     submit: function (e) {
       e.preventDefault();
+      if (!this.fechaSalida) {
+        this.getToastWarning('Fecha de salida es requerida')
+        return
+      }
       this.$store.commit("SET_CIUDAD_ORIGEN", this.ciudad_origen);
       this.$store.commit("SET_CIUDAD_DESTINO", this.ciudad_destino);
+
+      //Route
+     this.$router.push('listado')
     },
 
 
-    validate() {
-      this.$refs.form.validate();
-    },
-    reset() {
-      this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
-    },
     getToastSuccess(msg) {
       createToastInterface({
         timeout: 2000,
