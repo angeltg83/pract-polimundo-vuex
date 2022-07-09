@@ -1,6 +1,21 @@
-# my-app
+# Practica Vue - Vuex
 
-## Project setup
+### Versión Vue 
+```
+2.6.14
+```
+
+### Versión Vuetify 
+```
+2.6.0
+```
+
+### Versión Vuex
+```
+3.0.1
+```
+
+## Para instalar las dependencias
 ```
 npm install
 ```
@@ -9,16 +24,10 @@ npm install
 ```
 npm run serve
 ```
+### Documentación de las rutas
+```
+http://localhost:8080/        : Formulario de búsqueda
 
-### Compiles and minifies for production
-```
-npm run build
-```
+http://localhost:8080/listado : visualiza el listado de tickets
 
-### Lints and fixes files
 ```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
