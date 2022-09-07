@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <template>
-      <v-form @submit="submit" method="post" ref="form">
+      <v-form>
         <v-container class="lighten-5 mb-6">
           <h3>Listado de libros</h3>
           <v-row dense>
@@ -26,7 +26,13 @@
                 :items="books"
                 :items-per-page="5"
                 class="elevation-1"
-              ></v-data-table>
+              >
+                <template v-slot:[`item.actions`]="{ item }">
+                  <v-icon small class="mr-2" @click="viewDetailBook(item)">
+                    mdi-eye
+                  </v-icon>
+                </template>
+              </v-data-table>
             </v-col>
           </v-row>
 
@@ -93,10 +99,16 @@ export default {
       },
       { text: "Title", value: "title" },
       { text: "Author", value: "author" },
+      { text: "Actions", value: "actions", sortable: false },
     ],
   }),
 
   methods: {
+    viewDetailBook(item){
+ this.editedIndex = this.desserts.indexOf(item)
+        this.editedItem = Object.assign({}, item)
+        this.dialog = true
+    },
     async getCategory() {
       try {
         const { data } = await axios.get(
