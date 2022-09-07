@@ -1,60 +1,51 @@
 <template>
-  <v-card >
+  <v-card>
     <template>
-
-
       <v-form @submit="submit" method="post" ref="form">
         <v-container class="lighten-5 mb-6">
-          <h3>Tickets</h3>
+          <h3>Listado de libros</h3>
           <v-row dense>
             <v-col class="d-flex" cols="12" sm="3">
-              <v-select :items="getCiudades" v-model="ciudad_origen" item-text="name" item-value="id"
-                label="Cuidad origen" outlined></v-select>
-            </v-col>
-            <v-col class="d-flex" cols="12" sm="3">
-              <v-select :items="getCiudades" v-model="ciudad_destino" item-text="name" item-value="id"
-                label="Cuidad destino" outlined>
-              </v-select>
-            </v-col>
-
-            <v-col class="d-flex" cols="12" sm="3">
-              <v-menu ref="menu" v-model="menuFechaSalida" :close-on-content-click="false" transition="scale-transition"
-                offset-y min-width="auto">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field v-model="fechaSalida" label="Fecha salida" prepend-icon="mdi-calendar" readonly
-                    v-bind="attrs" v-on="on"></v-text-field>
-                </template>
-                <v-date-picker v-model="fechaSalida" :active-picker.sync="activePickerFechaSalida" min="1983-05-29"
-                  max="2025-05-29" @change="saveFechaSalida"></v-date-picker>
-              </v-menu>
-            </v-col>
-
-            <v-col class="d-flex" cols="12" sm="3">
-              <v-menu ref="menu" v-model="menuFechaRetorno" :close-on-content-click="false"
-                transition="scale-transition" offset-y min-width="auto">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field v-model="fechaRetorno" label="Fecha retorno" prepend-icon="mdi-calendar" readonly
-                    v-bind="attrs" v-on="on"></v-text-field>
-                </template>
-                <v-date-picker v-model="fechaRetorno" :active-picker.sync="activePickerFechaRetorno" min="1983-05-29"
-                  max="2025-05-29" @change="saveFechaRetorno"></v-date-picker>
-              </v-menu>
+              <v-select
+                :items="category"
+                v-model="categorySelect"
+                item-text="name"
+                item-value="category_id"
+                label="Categorias"
+                outlined
+              ></v-select>
             </v-col>
           </v-row>
 
-
+          <!-- datatable -->
           <v-row>
+            <v-col>
+              <v-data-table
+                :loading="loadGrid"
+                :headers="headers"
+                :items="books"
+                :items-per-page="5"
+                class="elevation-1"
+              ></v-data-table>
+            </v-col>
+          </v-row>
+
+          <!-- <v-row>
             <v-col outlined cols="12" sm="6" md="4"> </v-col>
             <v-col outlined cols="12" sm="6" md="4">
-              <v-btn type="submit" color="success" class="mr-4" @click="submit" width="100%">
+              <v-btn
+                type="submit"
+                color="success"
+                class="mr-4"
+                @click="submit"
+                width="100%"
+              >
                 Buscar tickets
-                <v-icon right dark>
-                  mdi-cloud-upload
-                </v-icon>
+                <v-icon right dark> mdi-cloud-upload </v-icon>
               </v-btn>
             </v-col>
             <v-col outlined cols="12" sm="6" md="4"> </v-col>
-          </v-row>
+          </v-row> -->
         </v-container>
       </v-form>
       <!-- <button class="action-button" @click="showToast">Show toast</button> -->
@@ -63,9 +54,9 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { createToastInterface } from "vue-toastification";
 import { mapState } from "vuex";
+import axios from "axios";
 
 export default {
   name: "FormTicketView",
@@ -73,76 +64,85 @@ export default {
     ...mapState(["filtros"]),
     getCiudades() {
       return this.$store.getters.getCiudades;
-    }
+    },
+  },
+
+  created() {
+    this.getCategory();
   },
 
   data: () => ({
+    // fechaSalida: null,
+    // activePickerFechaSalida: null,
+    // activePickerFechaRetorno: null,
+    // fechaRetorno: null,
+    // menuFechaSalida: false,
+    // menuFechaRetorno: false,
 
-    fechaSalida: null,
-    activePickerFechaSalida: null,
-    activePickerFechaRetorno: null,
-    fechaRetorno: null,
-    menuFechaSalida: false,
-    menuFechaRetorno: false,
-
-    items: [],
-    ciudad_origen: null,
-    ciudad_destino: null,
+    // items: [],
+    // ciudad_destino: null,
+    // -----------------
+    category: [],
+    categorySelect: null,
+    books: [],
+    loadGrid: false,
+    headers: [
+      {
+        text: "Id",
+        value: "ID",
+      },
+      { text: "Title", value: "title" },
+      { text: "Author", value: "author" },
+    ],
   }),
 
-
   methods: {
-    saveFechaSalida(date) {
-      console.log(date)
-    },
-    saveFechaRetorno(date) {
-      console.log(date)
-    },
-    submit: function (e) {
-      e.preventDefault();
-      if (!this.fechaSalida) {
-        this.getToastWarning('Fecha de salida es requerida')
-        return
+    async getCategory() {
+      try {
+        const { data } = await axios.get(
+          "http://localhost:8000/api/v1/get/getAll"
+        );
+        console.log(data);
+        this.category = data.data;
+      } catch (error) {
+        console.log(error);
       }
-      this.$store.commit("SET_CIUDAD_ORIGEN", this.ciudad_origen);
-      this.$store.commit("SET_CIUDAD_DESTINO", this.ciudad_destino);
-
-      //Route
-     this.$router.push('listado')
     },
 
+    async getBooksByCategoryID(id) {
+      try {
+        this.loadGrid = true;
+        const { data } = await axios.get(
+          `http://localhost:8000/api/v1/get/getLibros/${id}`
+        );
+        console.log(data);
+        this.books = data.data;
+        this.loadGrid = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
 
     getToastSuccess(msg) {
       createToastInterface({
         timeout: 2000,
       }).success(msg);
     },
-      getToastWarning(msg) {
+    getToastWarning(msg) {
       createToastInterface({
         timeout: 2000,
       }).warning(msg);
     },
   },
   watch: {
-    fechaSalida(newValue, oldValue) {
+    categorySelect(newValue, oldValue) {
       if (newValue != oldValue) {
-        this.$store.commit("SET_FECHA_SALIDA", newValue);
+        console.log(newValue);
+        this.getBooksByCategoryID(newValue);
       }
     },
-    fechaRetorno(newValue, oldValue) {
-      if (!moment(this.fechaSalida).isSameOrBefore(newValue)) {
-        this.getToastWarning('Fecha salida debe ser menor')
-        return
-      }
-
-      if (newValue != oldValue && moment(this.fechaSalida).isSameOrBefore(newValue)) {
-        this.$store.commit("SET_FECHA_RETORNO", newValue);
-      }
-    }
   },
 
-  async mounted() {
-
-  },
+  async mounted() {},
 };
 </script>
