@@ -3,7 +3,8 @@
     <template>
       <v-form>
         <v-container class="lighten-5 mb-6">
-          <h3>List of books</h3>
+          <center> <h2>Lists of Books</h2> </center>
+          <h4>Category</h4>
           <v-row dense>
             <v-col class="d-flex" cols="12" sm="3">
               <v-select :items="category" v-model="categorySelect" item-text="name" item-value="category_id" outlined
