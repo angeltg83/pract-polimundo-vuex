@@ -4,13 +4,13 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    component: () => import("../views/FormTicketView"),
+    component: () => import("../views/BooksView"),
   },
-  {
-    path: "/listado",
-    name: "listado",
-    component: () => import("../components/ListadoTickets"),
-  },
+  // {
+  //   path: "/listado",
+  //   name: "listado",
+  //   component: () => import("../components/ListadoTickets"),
+  // },
 ];
 
 const router = new VueRouter({
